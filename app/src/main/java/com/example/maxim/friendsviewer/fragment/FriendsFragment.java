@@ -3,16 +3,19 @@ package com.example.maxim.friendsviewer.fragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.maxim.friendsviewer.LaunchActivity;
 import com.example.maxim.friendsviewer.R;
 import com.example.maxim.friendsviewer.adapter.FriendAdapter;
 import com.example.maxim.friendsviewer.data.FriendData;
@@ -32,13 +35,14 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendsFragment extends Fragment {
+public class FriendsFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private FriendAdapter mFriendAdapter;
+    private SwipeRefreshLayout mSwipeContainer;
 
-    private List<FriendData> mFriends;
+    private List<FriendData> mAllFriends;
 
     @Nullable
     @Override
@@ -52,34 +56,54 @@ public class FriendsFragment extends Fragment {
                 LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mFriends = new ArrayList<>();
-
-        mFriendAdapter = new FriendAdapter(getActivity(), mFriends);
+        mAllFriends = new ArrayList<>();
+        mFriendAdapter = new FriendAdapter(getActivity(), mAllFriends);
         mRecyclerView.setAdapter(mFriendAdapter);
 
-        final VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
-                "first_name,last_name,city,universities,photo_100"));
-        request.executeWithListener(new VKRequest.VKRequestListener() {
+        updateFriends();
+
+        mSwipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
             @Override
-            public void onComplete(VKResponse response) {
-                super.onComplete(response);
-                VKList<VKApiUser> friends = (VKList) response.parsedModel;
-
-                for (VKApiUser friend : friends) {
-                    showFriend(friend);
-                }
-
-                mFriendAdapter.notifyDataSetChanged();
-
+            public void onRefresh() {
+                updateFriends();
             }
+
         });
+
+        mSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         setHasOptionsMenu(true);
 
         return view;
     }
 
-    private void showFriend(VKApiUser friend) {
+    private void updateFriends() {
+        final VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
+                "first_name,last_name,city,universities,photo_100"));
+        request.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+                VKList<VKApiUser> vkFriends = (VKList) response.parsedModel;
+
+                mAllFriends.clear();
+
+                for (VKApiUser vkFriend : vkFriends) {
+                    mAllFriends.add(parseVkFriend(vkFriend));
+                }
+
+                mRecyclerView.setAdapter(mFriendAdapter);
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
+    }
+
+    private FriendData parseVkFriend(VKApiUser friend) {
         VKApiCity city = new VKApiCity();
         try {
             city.parse(friend.fields.getJSONObject("city"));
@@ -93,14 +117,19 @@ public class FriendsFragment extends Fragment {
         } catch (JSONException e) {
             // Log.e("VK Application", "Could not parse first city");
         }
-
-        mFriends.add(new FriendData(friend.first_name,
-                friend.last_name, city.title, university.name, friend.photo_100));
+        return new FriendData(friend.first_name,
+                friend.last_name, city.title, university.name, friend.photo_100);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnQueryTextListener(this);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -129,4 +158,32 @@ public class FriendsFragment extends Fragment {
                 .commitAllowingStateLoss();
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        if (newText == null || newText.trim().isEmpty()) {
+            mFriendAdapter = new FriendAdapter(getActivity(), mAllFriends);
+            mRecyclerView.setAdapter(mFriendAdapter);
+            return false;
+        }
+
+        List<FriendData> filteredFriends = new ArrayList<>();
+        for (FriendData friend : mAllFriends) {
+            if (friend.getFirstName().toLowerCase().indexOf(newText) == 0
+                    || friend.getLastName().toLowerCase().indexOf(newText) == 0
+                    || friend.getFullName().toLowerCase().indexOf(newText) == 0
+                    || friend.getCity().toLowerCase().indexOf(newText) == 0
+                    || friend.getUniversity().toLowerCase().indexOf(newText) == 0) {
+                filteredFriends.add(friend);
+            }
+        }
+
+        mFriendAdapter = new FriendAdapter(getActivity(), filteredFriends);
+        mRecyclerView.setAdapter(mFriendAdapter);
+        return true;
+    }
 }

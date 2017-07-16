@@ -27,23 +27,26 @@ public class FriendData {
     }
 
     public String getFirstName() {
-        return mFirstName;
+        return mFirstName == null ? "" : mFirstName;
     }
 
     public String getLastName() {
-        return mLastName;
+        return mLastName == null ? "" : mLastName;
+    }
+
+    public String getFullName() {
+        return getFirstName() + " " + getLastName();
     }
 
     public String getCity() {
-        return mCity;
+        return mCity == null ? "" : mCity;
     }
 
     public String getUniversity() {
-        return mUniversity;
+        return mUniversity == null ? "" : mUniversity;
     }
 
     public String getPhotoUrl() {
         return mPhotoUrl;
     }
-
 }

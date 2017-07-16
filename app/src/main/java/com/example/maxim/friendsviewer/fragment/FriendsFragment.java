@@ -1,24 +1,27 @@
 package com.example.maxim.friendsviewer.fragment;
 
-import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.maxim.friendsviewer.R;
+import com.example.maxim.friendsviewer.activity.LaunchActivity;
 import com.example.maxim.friendsviewer.adapter.FriendAdapter;
 import com.example.maxim.friendsviewer.data.FriendData;
+import com.example.maxim.friendsviewer.utils.Constants;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -37,19 +40,24 @@ import java.util.List;
 
 public class FriendsFragment extends Fragment implements SearchView.OnQueryTextListener {
 
+    public static final String TAG = FriendsFragment.class.getCanonicalName();
+
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private FriendAdapter mFriendAdapter;
     private SwipeRefreshLayout mSwipeContainer;
 
-    private List<FriendData> mAllFriends;
+    private ArrayList<FriendData> mAllFriends;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, Bundle savedInstanceState) {
 
+        Log.d("Vk Application", "FriendsFragment onCreateView");
+
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_friends);
 
         mLayoutManager = new LinearLayoutManager(getActivity(),
@@ -57,10 +65,17 @@ public class FriendsFragment extends Fragment implements SearchView.OnQueryTextL
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mAllFriends = new ArrayList<>();
+
+        if (savedInstanceState == null) {
+            Log.d("Vk Application", "FriendsFragment onCreateView null");
+            updateFriends();
+        } else {
+            Log.d("Vk Application", "FriendsFragment onCreateView not null");
+            mAllFriends = savedInstanceState.getParcelableArrayList(Constants.BUNDLE.KEY_FRIENDS_LIST);
+        }
+
         mFriendAdapter = new FriendAdapter(getActivity(), mAllFriends);
         mRecyclerView.setAdapter(mFriendAdapter);
-
-        updateFriends();
 
         mSwipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -117,8 +132,15 @@ public class FriendsFragment extends Fragment implements SearchView.OnQueryTextL
         } catch (JSONException e) {
             // Log.e("VK Application", "Could not parse first city");
         }
-        return new FriendData(friend.first_name,
+        return new FriendData(friend.id, friend.first_name,
                 friend.last_name, city.title, university.name, friend.photo_100);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(Constants.BUNDLE.KEY_FRIENDS_LIST, mAllFriends);
+        Log.d("Vk Application", "FriendsFragment onSaveInstanceState");
     }
 
     @Override
@@ -139,7 +161,7 @@ public class FriendsFragment extends Fragment implements SearchView.OnQueryTextL
             case R.id.action_logout:
                 VKSdk.logout();
                 if (!VKSdk.isLoggedIn()) {
-                    showLogin();
+                    startActivity(new Intent(getContext(), LaunchActivity.class));
                 }
                 return true;
             case R.id.action_search:
@@ -149,13 +171,6 @@ public class FriendsFragment extends Fragment implements SearchView.OnQueryTextL
                 return super.onOptionsItemSelected(item);
 
         }
-    }
-
-    private void showLogin() {
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, new LoginFragment())
-                .commitAllowingStateLoss();
     }
 
     @Override

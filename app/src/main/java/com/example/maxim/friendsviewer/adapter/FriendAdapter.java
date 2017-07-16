@@ -1,17 +1,19 @@
 package com.example.maxim.friendsviewer.adapter;
 
 
-import android.app.Activity;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.maxim.friendsviewer.R;
 import com.example.maxim.friendsviewer.data.FriendData;
+import com.example.maxim.friendsviewer.fragment.GroupsFragment;
+import com.example.maxim.friendsviewer.utils.Constants;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -20,11 +22,11 @@ import java.util.List;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendViewHolder> {
 
-    private Activity mActivity;
+    private FragmentActivity mActivity;
     private List<FriendData> mFriends;
 
 
-    public FriendAdapter(Activity activity, List<FriendData> friends) {
+    public FriendAdapter(FragmentActivity activity, List<FriendData> friends) {
         mActivity = activity;
         mFriends = friends;
     }
@@ -87,8 +89,17 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    Toast.makeText(mActivity, "item clicked " + mFriendName.getText().toString(),
-                            Toast.LENGTH_SHORT).show();
+
+                    Bundle arguments = new Bundle();
+                    arguments.putInt(Constants.BUNDLE.KEY_USER_ID, data.getId());
+                    GroupsFragment groupsFragment = new GroupsFragment();
+                    groupsFragment.setArguments(arguments);
+
+                    mActivity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.container, groupsFragment, GroupsFragment.TAG)
+                            .addToBackStack(GroupsFragment.TAG)
+                            .commit();
                 }
             });
         }

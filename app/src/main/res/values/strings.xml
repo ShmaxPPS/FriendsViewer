@@ -3,7 +3,9 @@
     <integer name="com_vk_sdk_AppId">6113966</integer>
     <string name="friends_viewer_application">Friends Viewer Application</string>
     <string name="login">login with VK</string>
+    <string name="continue_app">continue</string>
+    <string name="logout">logout</string>
     <string name="action_search">search</string>
     <string name="action_logout">logout</string>
-
 </resources>
+

@@ -1,8 +1,8 @@
 package com.example.maxim.friendsviewer.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +14,9 @@ import com.vk.sdk.VKSdk;
 
 public class LoginFragment extends Fragment {
 
-    private String[] mScope = {VKScope.FRIENDS, VKScope.GROUPS};
+    public static final String TAG = LoginFragment.class.getCanonicalName();
+
+    private String[] mScope = {VKScope.FRIENDS, VKScope.GROUPS, VKScope.NOHTTPS};
 
     private Button mLoginButton;
 

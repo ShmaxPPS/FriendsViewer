@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.example.maxim.friendsviewer.LaunchActivity;
+import com.example.maxim.friendsviewer.activity.LaunchActivity;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;

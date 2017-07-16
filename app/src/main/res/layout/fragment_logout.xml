@@ -6,27 +6,41 @@
     tools:context="com.example.maxim.friendsviewer.activity.AuthActivity">
 
     <TextView
-        android:id="@+id/login_info"
+        android:id="@+id/logout_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/friends_viewer_application"
         android:textSize="20sp"
         android:textColor="@color/colorPrimary"
         android:textStyle="bold"
-        android:layout_above="@+id/login_button"
+        android:layout_above="@+id/continue_button"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="72dp" />
 
     <Button
-        android:id="@+id/login_button"
+        android:id="@+id/continue_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:padding="8dp"
-        android:text="@string/login"
+        android:text="@string/continue_app"
         android:background="@color/colorPrimary"
         android:textColor="#FFFFFF"
+        android:layout_marginBottom="36dp"/>
+
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:text="@string/logout"
+        android:background="@color/colorPrimary"
+        android:padding="8dp"
+        android:textColor="#FFFFFF"
+        android:layout_below="@+id/continue_button"/>
 
 </RelativeLayout>
+
 

@@ -1,7 +1,12 @@
 package com.example.maxim.friendsviewer.data;
 
 
-public class FriendData {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class FriendData implements Parcelable {
+
+    private int mId;
 
     private String mFirstName;
 
@@ -13,17 +18,53 @@ public class FriendData {
 
     private String mPhotoUrl;
 
+    public static final Parcelable.Creator<FriendData> CREATOR =
+            new Parcelable.Creator<FriendData>() {
+                public FriendData createFromParcel(Parcel in) {
+                    return new FriendData(in);
+                }
 
-    public FriendData() {
+                public FriendData[] newArray(int size) {
+                    return new FriendData[size];
+                }
+            };
+
+    private FriendData(Parcel in) {
+        mId = in.readInt();
+        mFirstName = in.readString();
+        mLastName = in.readString();
+        mCity = in.readString();
+        mUniversity = in.readString();
+        mPhotoUrl = in.readString();
     }
 
-    public FriendData(String firstName, String lastName,
+    public FriendData(int id, String firstName, String lastName,
                       String city, String university, String photoUrl) {
+        mId = id;
         mFirstName = firstName;
         mLastName = lastName;
         mCity = city;
         mUniversity = university;
         mPhotoUrl = photoUrl;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mId);
+        dest.writeString(mFirstName);
+        dest.writeString(mLastName);
+        dest.writeString(mCity);
+        dest.writeString(mUniversity);
+        dest.writeString(mPhotoUrl);
+    }
+
+    public int getId() {
+        return mId;
     }
 
     public String getFirstName() {
@@ -49,4 +90,6 @@ public class FriendData {
     public String getPhotoUrl() {
         return mPhotoUrl;
     }
+
+
 }

@@ -10,7 +10,6 @@ import com.example.maxim.friendsviewer.fragment.FriendsFragment;
 
 public class LaunchActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

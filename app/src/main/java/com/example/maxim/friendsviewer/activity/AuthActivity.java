@@ -4,6 +4,7 @@ package com.example.maxim.friendsviewer.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
 
 import com.example.maxim.friendsviewer.R;
 import com.example.maxim.friendsviewer.fragment.LoginFragment;
@@ -88,13 +89,20 @@ public class AuthActivity extends FragmentActivity {
         VKCallback<VKAccessToken> callback = new VKCallback<VKAccessToken>() {
             @Override
             public void onResult(VKAccessToken res) {
-                // User passed Authorization
                 startActivity(new Intent(getApplicationContext(), LaunchActivity.class));
             }
 
             @Override
             public void onError(VKError error) {
-                // User didn't pass Authorization
+                switch (error.errorCode) {
+                    case VKError.VK_REQUEST_HTTP_FAILED :
+                        Toast.makeText(getApplication(),
+                                R.string.internet_connection_error, Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        Toast.makeText(getApplicationContext(),
+                                error.toString(), Toast.LENGTH_SHORT).show();
+                }
             }
         };
 

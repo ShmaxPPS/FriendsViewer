@@ -6,10 +6,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.maxim.friendsviewer.R;
 import com.example.maxim.friendsviewer.adapter.GroupAdapter;
@@ -17,6 +17,7 @@ import com.example.maxim.friendsviewer.data.GroupData;
 import com.example.maxim.friendsviewer.utils.Constants;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
+import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
@@ -24,7 +25,6 @@ import com.vk.sdk.api.model.VKApiCommunity;
 import com.vk.sdk.api.model.VKList;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class GroupsFragment extends Fragment {
 
@@ -35,16 +35,15 @@ public class GroupsFragment extends Fragment {
     private GroupAdapter mGroupAdapter;
     private SwipeRefreshLayout mSwipeContainer;
 
-    private List<GroupData> mAllGroups;
+    private ArrayList<GroupData> mAllGroups;
 
     private int mUserId;
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, Bundle savedInstanceState) {
-        Log.d("Vk Application", "GroupsFragment onCreateView");
-
 
         View view = inflater.inflate(R.layout.fragment_groups, container, false);
 
@@ -55,14 +54,18 @@ public class GroupsFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mAllGroups = new ArrayList<>();
-        mGroupAdapter = new GroupAdapter(getActivity(), mAllGroups);
-        mRecyclerView.setAdapter(mGroupAdapter);
 
         if (savedInstanceState != null) {
             mUserId = savedInstanceState.getInt(Constants.BUNDLE.KEY_USER_ID);
+            mAllGroups = savedInstanceState
+                    .getParcelableArrayList(Constants.BUNDLE.KEY_GROUPS_LIST);
         } else {
             mUserId = getArguments().getInt(Constants.BUNDLE.KEY_USER_ID);
+            updateGroups();
         }
+
+        mGroupAdapter = new GroupAdapter(getActivity(), mAllGroups);
+        mRecyclerView.setAdapter(mGroupAdapter);
 
         mSwipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -73,7 +76,6 @@ public class GroupsFragment extends Fragment {
             }
         });
 
-        updateGroups();
 
         mSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -86,8 +88,8 @@ public class GroupsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d("Vk Application", "FriendsFragment onSaveInstanceState");
         outState.putInt(Constants.BUNDLE.KEY_USER_ID, mUserId);
+        outState.putParcelableArrayList(Constants.BUNDLE.KEY_GROUPS_LIST, mAllGroups);
     }
 
     private void updateGroups() {
@@ -112,8 +114,21 @@ public class GroupsFragment extends Fragment {
                 mRecyclerView.setAdapter(mGroupAdapter);
                 mSwipeContainer.setRefreshing(false);
             }
+
+            @Override
+            public void onError(VKError error) {
+                super.onError(error);
+                switch (error.errorCode) {
+                    case VKError.VK_REQUEST_HTTP_FAILED :
+                        Toast.makeText(getActivity(),
+                                R.string.internet_connection_error, Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        Toast.makeText(getActivity(),
+                                error.toString(), Toast.LENGTH_SHORT).show();
+                }
+                mSwipeContainer.setRefreshing(false);
+            }
         });
     }
-
-
 }

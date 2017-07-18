@@ -48,14 +48,14 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHol
         private ImageView mGroupPhoto;
         private TextView mGroupName;
 
-        public GroupViewHolder(View itemView) {
+        GroupViewHolder(View itemView) {
             super(itemView);
 
             mGroupPhoto = (ImageView) itemView.findViewById(R.id.group_photo);
             mGroupName = (TextView) itemView.findViewById(R.id.group_name);
         }
 
-        public void bind(final GroupData data) {
+        void bind(final GroupData data) {
             mGroupName.setText(data.getName());
 
             Picasso.with(mActivity)

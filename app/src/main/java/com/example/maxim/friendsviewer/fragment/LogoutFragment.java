@@ -14,9 +14,8 @@ import com.example.maxim.friendsviewer.activity.LaunchActivity;
 import com.vk.sdk.VKSdk;
 
 public class LogoutFragment extends Fragment {
-    public LogoutFragment() {
-        super();
-    }
+
+    public static final String TAG = LogoutFragment.class.getCanonicalName();
 
     private Button mContinueButton;
     private Button mLogoutButton;

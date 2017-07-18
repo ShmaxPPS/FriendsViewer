@@ -54,18 +54,16 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
         private TextView mFriendCity;
         private TextView mFriendUniversity;
 
-        public FriendViewHolder(View itemView) {
+        FriendViewHolder(View itemView) {
             super(itemView);
-
 
             mFriendPhoto = (ImageView) itemView.findViewById(R.id.friend_photo);
             mFriendName = (TextView) itemView.findViewById(R.id.friend_name);
             mFriendCity = (TextView) itemView.findViewById(R.id.friend_city);
             mFriendUniversity = (TextView) itemView.findViewById(R.id.friend_university);
-
         }
 
-        public void bind(final FriendData data) {
+        void bind(final FriendData data) {
             mFriendName.setText(data.getFullName());
             mFriendCity.setText(data.getCity());
             mFriendUniversity.setText(data.getUniversity());

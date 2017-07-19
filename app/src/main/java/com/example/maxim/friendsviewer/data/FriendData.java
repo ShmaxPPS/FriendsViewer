@@ -6,17 +6,17 @@ import android.os.Parcelable;
 
 public class FriendData implements Parcelable {
 
-    private int mId;
+    private final int mId;
 
-    private String mFirstName;
+    private final String mFirstName;
 
-    private String mLastName;
+    private final String mLastName;
 
-    private String mCity;
+    private final String mCity;
 
-    private String mUniversity;
+    private final String mUniversity;
 
-    private String mPhotoUrl;
+    private final String mPhotoUrl;
 
     public static final Parcelable.Creator<FriendData> CREATOR =
             new Parcelable.Creator<FriendData>() {

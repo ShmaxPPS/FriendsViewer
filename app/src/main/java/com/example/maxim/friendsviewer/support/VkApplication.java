@@ -16,7 +16,8 @@ public class VkApplication extends Application {
         @Override
         public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
             if (newToken == null) {
-                Toast.makeText(getApplicationContext(), "AccessToken invalidated", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),
+                        "AccessToken invalidated", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(VkApplication.this, LaunchActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

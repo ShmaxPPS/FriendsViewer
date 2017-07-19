@@ -7,9 +7,9 @@ import android.os.Parcelable;
 
 public class GroupData implements Parcelable {
 
-    private String mName;
+    private final String mName;
 
-    private String mPhotoUrl;
+    private final String mPhotoUrl;
 
     public static final Parcelable.Creator<GroupData> CREATOR =
             new Parcelable.Creator<GroupData>() {

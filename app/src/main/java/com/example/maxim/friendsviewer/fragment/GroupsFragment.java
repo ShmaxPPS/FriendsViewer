@@ -93,7 +93,7 @@ public class GroupsFragment extends Fragment {
     }
 
     private void updateGroups() {
-        final VKRequest request = VKApi.groups().get(VKParameters.from(
+        VKRequest request = VKApi.groups().get(VKParameters.from(
                 VKApiConst.USER_ID, mUserId,
                 VKApiConst.EXTENDED, 1,
                 VKApiConst.FIELDS, "name, photo_100"));

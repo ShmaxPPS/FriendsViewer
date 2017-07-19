@@ -22,7 +22,8 @@ public class LogoutFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_logout, container, false);
 
         mContinueButton = (Button) view.findViewById(R.id.continue_button);
@@ -34,7 +35,6 @@ public class LogoutFragment extends Fragment {
         });
 
         mLogoutButton = (Button) view.findViewById(R.id.logout_button);
-
 
         mLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override

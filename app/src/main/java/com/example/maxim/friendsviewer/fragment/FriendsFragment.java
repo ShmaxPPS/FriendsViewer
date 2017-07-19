@@ -100,7 +100,7 @@ public class FriendsFragment extends Fragment implements SearchView.OnQueryTextL
     }
 
     private void updateFriends() {
-        final VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
+        VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
                 "first_name, last_name, city, universities, photo_100"));
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
@@ -214,12 +214,13 @@ public class FriendsFragment extends Fragment implements SearchView.OnQueryTextL
         }
 
         List<FriendData> filteredFriends = new ArrayList<>();
+        newText = newText.toLowerCase();
         for (FriendData friend : mAllFriends) {
-            if (friend.getFirstName().toLowerCase().indexOf(newText) == 0
-                    || friend.getLastName().toLowerCase().indexOf(newText) == 0
-                    || friend.getFullName().toLowerCase().indexOf(newText) == 0
-                    || friend.getCity().toLowerCase().indexOf(newText) == 0
-                    || friend.getUniversity().toLowerCase().indexOf(newText) == 0) {
+            if (friend.getFirstName().toLowerCase().startsWith(newText)
+                    || friend.getLastName().toLowerCase().startsWith(newText)
+                    || friend.getFullName().toLowerCase().startsWith(newText)
+                    || friend.getCity().toLowerCase().startsWith(newText)
+                    || friend.getUniversity().toLowerCase().startsWith(newText)) {
                 filteredFriends.add(friend);
             }
         }
